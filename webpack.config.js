@@ -20,7 +20,19 @@ module.exports = {
             options: { minimize: true }
           }
         ]
-      }
+      },
+      //css
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: "style-loader"
+          },
+          {
+            loader: 'css-loader'
+          }
+        ]
+      },
     ]
   },
   optimization: {
