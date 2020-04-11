@@ -48,6 +48,14 @@ module.exports = {
         hoge: "fuga"
       }
     }),
+    new HtmlwebpackPlugin({
+      template: './pug.pug',
+      filename: 'pug.html',
+      templateParameters: {
+        title: "foo",
+        hoge: "fuga"
+      }
+    }),
     new GenerateSW()
   ],
   module: {
@@ -85,7 +93,14 @@ module.exports = {
             loader: 'markdown-loader'
           }
         ]
-      }
+      },
+      //pug
+      {
+        test: /\.pug$/,
+        use: [
+          'pug-loader'
+        ]
+      },
     ]
   },
   optimization: {
