@@ -36,6 +36,10 @@ module.exports = {
       filename: 'about.html',
       chunks: ['page2']
     }),
+    new HtmlwebpackPlugin({
+      template: './src/Markdown.md',
+      filename: 'markdown.html',
+    }),
     new GenerateSW()
   ],
   module: {
@@ -62,6 +66,18 @@ module.exports = {
           }
         ]
       },
+      // md
+      {
+        test: /\.md$/,
+        use: [
+          {
+            loader: "html-loader"
+          },
+          {
+            loader: 'markdown-loader'
+          }
+        ]
+      }
     ]
   },
   optimization: {
