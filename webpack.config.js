@@ -40,6 +40,14 @@ module.exports = {
       template: './src/Markdown.md',
       filename: 'markdown.html',
     }),
+    new HtmlwebpackPlugin({
+      template: './ejs.ejs',
+      filename: 'ejs.html',
+      templateParameters: {
+        title: "foo",
+        hoge: "fuga"
+      }
+    }),
     new GenerateSW()
   ],
   module: {
