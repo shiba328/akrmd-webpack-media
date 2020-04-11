@@ -56,6 +56,10 @@ module.exports = {
         hoge: "fuga"
       }
     }),
+    new HtmlwebpackPlugin({
+      template: 'layout.pug',
+      filename: 'layout.html',
+    }),
     new GenerateSW()
   ],
   module: {
