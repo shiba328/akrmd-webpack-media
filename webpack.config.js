@@ -2,113 +2,76 @@ const TerserPlugin = require('terser-webpack-plugin');
 const HtmlwebpackPlugin = require("html-webpack-plugin");
 const { GenerateSW } = require('workbox-webpack-plugin');
 const path = require('path');
+const fs = require('fs');
 
-module.exports = {
-  entry: {
-    'index': './src/index.js',
-    'page2': './src/page2.js'
-  },
-  plugins: [
-    new HtmlwebpackPlugin({
-      template: `./index.html`,
-      inject: 'head',
-      scriptLoading: 'defer',
-      favicon: 'src/favicon.ico',
-      meta: {
-        viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'
-      },
-      base: {
-        href: 'http://example.com/some/page.html'
-      },
-      minify: {
-        collapseWhitespace: true,
-        removeComments: true,
-        removeRedundantAttributes: true,
-        removeScriptTypeAttributes: true,
-        removeStyleLinkTypeAttributes: true,
-        useShortDoctype: true
-      },
-      hash: true,
-      chunks: ['index']
-    }),
-    new HtmlwebpackPlugin({
-      template: path.join(__dirname, `about.html`),
-      filename: 'about.html',
-      chunks: ['page2']
-    }),
-    new HtmlwebpackPlugin({
-      template: './src/Markdown.md',
-      filename: 'markdown.html',
-    }),
-    new HtmlwebpackPlugin({
-      template: './ejs.ejs',
-      filename: 'ejs.html',
-      templateParameters: {
-        title: "foo",
-        hoge: "fuga"
-      }
-    }),
-    new HtmlwebpackPlugin({
-      template: './pug.pug',
-      filename: 'pug.html',
-      templateParameters: {
-        title: "foo",
-        hoge: "fuga"
-      }
-    }),
-    new HtmlwebpackPlugin({
-      template: 'layout.pug',
-      filename: 'layout.html',
-    }),
-    new GenerateSW()
-  ],
-  module: {
-    rules: [
-      // html
-      {
-        test: /\.html$/,
-        use: [
-          {
-            loader: 'html-loader',
-            options: { minimize: true }
-          }
-        ]
-      },
-      //css
-      {
-        test: /\.css$/,
-        use: [
-          {
-            loader: "style-loader"
-          },
-          {
-            loader: 'css-loader'
-          }
-        ]
-      },
-      // md
-      {
-        test: /\.md$/,
-        use: [
-          {
-            loader: "html-loader"
-          },
-          {
-            loader: 'markdown-loader'
-          }
-        ]
-      },
-      //pug
-      {
-        test: /\.pug$/,
-        use: [
-          'pug-loader'
-        ]
-      },
-    ]
-  },
-  optimization: {
-    minimize: false,
-    minimizer: [new TerserPlugin()]
+module.exports = () => {
+  const loadPosts = (dir) => {
+    const postFiles = fs.readdirSync(path.resolve(__dirname, dir));
+
+    return postFiles.map(file => {
+      const fileName = file.split('.')[0];
+
+      return new HtmlwebpackPlugin({
+        template: path.resolve(__dirname, './layout.pug'),
+        filename: `${fileName}/index.html`,
+        templateParameters: {
+          file
+        }
+      })
+    })
+  }
+
+  return {
+    entry: {
+      'index': './src/index.js',
+    },
+    plugins: [
+      new GenerateSW(),
+    ].concat(loadPosts('./post')),
+    module: {
+      rules: [
+        // html
+        {
+          test: /\.html$/,
+          use: [
+            {
+              loader: 'html-loader'
+            }
+          ]
+        },
+        //css
+        {
+          test: /\.css$/,
+          use: [
+            {
+              loader: "style-loader"
+            },
+            {
+              loader: 'css-loader'
+            }
+          ]
+        },
+        // md
+        {
+          test: /\.md$/,
+          use: [
+            {
+              loader: 'markdown-loader',
+            }
+          ]
+        },
+        //pug
+        {
+          test: /\.pug$/,
+          use: [
+            'pug-loader'
+          ]
+        }
+      ]
+    },
+    optimization: {
+      minimize: false,
+      // minimizer: [new TerserPlugin()]
+    }
   }
 }
