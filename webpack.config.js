@@ -4,6 +4,10 @@ const { GenerateSW } = require('workbox-webpack-plugin');
 const path = require('path');
 const fs = require('fs');
 
+const markdownIt = require('markdown-it');
+const prism = require('markdown-it-prism');
+const attrs = require('markdown-it-attrs');
+
 module.exports = () => {
   const loadPosts = (dir) => {
     const postFiles = fs.readdirSync(path.resolve(__dirname, dir));
@@ -56,7 +60,12 @@ module.exports = () => {
           test: /\.md$/,
           use: [
             {
-              loader: 'markdown-loader',
+              loader: 'frontmatter-markdown-loader',
+              options: {
+                markdownIt: markdownIt()
+                  .use(prism, { defaultLanguage: 'shell' })
+                  .use(attrs, {})
+              }
             }
           ]
         },
